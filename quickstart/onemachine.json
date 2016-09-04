@@ -65,7 +65,7 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "configSets" : {
-            "full_install" : [ "install_cfn", "install_dse" ]
+            "full_install" : [ "install_cfn"]
           },
 
           "install_cfn" : {
@@ -103,26 +103,6 @@
               }
             }
           },
-          "install_dse" : {
-            "commands" : {
-              "01_install_dse" : {
-                "command" : { "Fn::Join" : ["", [
-                  "#!/usr/bin/env bash \n",
-                  "cloud_type=\"aws\" \n",
-                  "data_center_name=\"dc0\" \n",
-                  "seed_node_dns_name=\"dc0vm0\" \n",
-                  "echo \"Configuring nodes with the settings:\" \n",
-                  "echo cloud_type $cloud_type \n",
-                  "echo seed_node_dns_name $seed_node_dns_name \n",
-                  "apt-get -y install unzip \n",
-                  "wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-4.zip \n",
-                  "unzip 5.0.1-4.zip \n",
-                  "cd install-datastax-ubuntu-5.0.1-4/bin \n",
-                  "./dse.sh $cloud_type $seed_node_dns_name $data_center_name \n"
-                  ]]},
-              }
-            }
-          }
         }
       },
       "Properties": {
@@ -135,6 +115,18 @@
           "#!/bin/bash -xe\n",
           "apt-get update\n",
           "apt-get -y install python-setuptools python-pip\n",
+          "export cloud_type=aws","\n",
+          "export data_center_name=dc0","\n",
+          "export seed_node_dns_name=dc0vm0","\n",
+          "echo Configuring nodes with the settings: \n",
+          "echo cloud_type $cloud_type \n",
+          "echo seed_node_dns_name $seed_node_dns_name \n",
+          "apt-get -y install unzip \n",
+          "cd /home/ubuntu","\n",
+          "wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-4.zip \n",
+          "unzip 5.0.1-4.zip \n",
+          "cd install-datastax-ubuntu-5.0.1-4/bin","\n",
+          "./dse.sh $cloud_type $seed_node_dns_name $data_center_name","\n",
           "pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz \n",
           "ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup \n",
           "chmod 775 /usr/local/init/ubuntu/cfn-hup \n",
